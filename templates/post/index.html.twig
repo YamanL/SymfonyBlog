@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Home Page{% endblock %}
+
+{% block body %}
+
+    <div class="text-center ">
+    <br>
+    <br>
+    <label class="d-flex "></label>
+
+        <form  method="get">
+
+            <label>
+                <input class="form-control me-sm-2" type="search" placeholder="Post Title" name="title">
+            </label>
+            <label>
+                <input class="form-control me-sm-2" type="search" placeholder="Actors Name" name="actor">
+            </label>
+            <br>
+            <label>
+                <input class="form-control me-sm-2" type="search" placeholder="Categories" name="category">
+            </label>
+            <br>
+            <br>
+            <button class="btn btn-secondary btn-sm my-2 my-sm-0" type="submit">Search</button>
+        </form>
+        <br>
+
+    </div>
+
+    <br>
+    {% if app.user%}
+    <a class="btn btn-primary" href="{{ path('post_new') }}">Create new Post</a>
+    {% endif %}
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success mt-5 text-center">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+
+
+    {% for post in posts %}
+        <section class="posts text-center">
+            <article>
+                <h2>{{ post.title }}</h2>
+                <div class="metadat">
+                    {{ post.createdAt | date('Y-m-d')}} at {{ post.createdAt | date('H:i') }} by
+                    {% if post.author %}
+                        {{ post.author.firstName }}
+                    {% else %}
+                        user
+                    {% endif %}
+{#                    {% if post.category is  null %}#}
+{#                        <span class="badge bg-success">{{ post.category.title }}</span>#}
+{#                    {% endif %}#}
+                    {{ post.comments | length  }} {{ (post.comments | length <= 1) ? 'comment' : 'comments' }}
+                </div>
+                <div class="content">
+                    {% if post.imageName %}
+                        <img src="{{ vich_uploader_asset(post, 'imageFile') }}" alt="" class="mt-3 mb-3" width="250">
+                    {% else %}
+                        <img src="https://picsum.photos/seed/picsum" alt="" class="mt-3 mb-3">
+                    {% endif %}
+                    <br>
+                    <br>
+                    {% for category in post.getCategories() %}
+                        <span class="badge bg-success">{{ category.getTitle() }}</span>
+                    {% endfor %}
+                    <br>
+                    <br>
+                    <p>{{ post.content |slice(0,102) }}...</p>
+                    <a href="{{ path('post_show', {'id' : post.id}) }}">Read more</a>
+                </div>
+            </article>
+        </section>
+    {% endfor %}
+    <div class="navigation mt-5">
+        {{ knp_pagination_render(posts) }}
+    </div>
+{% endblock %}

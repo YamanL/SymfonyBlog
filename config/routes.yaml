@@ -1,0 +1,4 @@
+search:
+  path: /search
+  controller: App\Controller\PostController::searchAction
+  methods: [POST]

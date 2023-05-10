@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Actor Show{% endblock %}
+
+{% block body %}
+    <h1>Actor</h1>
+
+    <table class="table">
+        <tbody>
+        <tr>
+            <th>Id</th>
+            <td>{{ actor.id }}</td>
+        </tr>
+        <tr>
+            <th>Name</th>
+            <td>{{ actor.name }}</td>
+        </tr>
+        <tr>
+            <th>Biography</th>
+            <td>{{ actor.biography }}</td>
+        </tr>
+        <tr>
+            <th>Image</th>
+            <td>
+                {% if actor.image %}
+                    <img src="{{ asset('uploads/' ~ actor.image) }}" alt="{{ actor.name }}" width="100">
+                {% endif %}
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('actor_index') }}">Back to the list</a>
+{% endblock %}

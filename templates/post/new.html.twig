@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+{% form_theme form 'bootstrap_4_layout.html.twig' %}
+{% block title %}Create a post{% endblock %}
+
+{% block body %}
+    <h1 class="text-center">Add a post</h1>
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+       <div class="text-center"> <button class="btn btn-success mt-5">Add new post</button></div>
+    {{ form_end(form) }}
+{% endblock %}

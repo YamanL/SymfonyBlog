@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Actors{% endblock %}
+
+{% block body %}
+<h1 class="text-center">Actors</h1>
+    <br>
+    <div class="text-center ">
+
+    <label class="d-flex "></label>
+    <form  method="get">
+
+        <label>
+            <input class="form-control me-sm-2" type="search" placeholder="Actors Name" name="name">
+        </label>
+        <label>
+            <input class="form-control me-sm-2" type="search" placeholder="Post Title" name="post">
+        </label>
+
+
+
+        <button class="btn btn-secondary  my-2 my-sm-0" type="submit">Search</button>
+    </form>
+        <br>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Biography</th>
+        <th>Image</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for actor in actors %}
+    <tr>
+        <td>{{ actor.id }}</td>
+        <td>{{ actor.name }}</td>
+        <td>{{ actor.biography |slice(0,102) }}...</td>
+        <td>
+            {% if actor.image %}
+                <img src="{{ asset('uploads/' ~ actor.image) }}" alt="{{ actor.name }}" width="50">
+            {% endif %}
+        </td>
+
+        <td>
+            <a href="{{ path('actor_show', {'id': actor.id}) }}">Show</a>
+            <a href="{{ path('actor_edit', {'id': actor.id}) }}">Edit</a>
+            <form action="{{ path('actor_delete', {'id': actor.id}) }}" method="post">
+                <input type="hidden" name="_method" value="DELETE">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ actor.id) }}">
+                <button class="btn btn-danger">Delete</button>
+            </form>
+        </td>
+    </tr>
+    {% else %}
+        <tr>
+            <td colspan="3">No Actors found</td>
+        </tr>
+    {% endfor %}
+
+    </tbody>
+</table>
+
+    <a class="btn btn-primary" href="{{ path('actor_new') }}">Create new actor</a>
+{% endblock %}
+
+

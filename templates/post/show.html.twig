@@ -1,0 +1,161 @@
+
+{% extends 'base.html.twig' %}
+{% form_theme commentForm 'bootstrap_4_layout.html.twig' %}
+
+{% block title %}Post Show{% endblock %}
+
+{% block body %}
+<style>
+    .post{
+        border-radius: 10px;
+        box-shadow: 0 10px 16px rgba(0, 0, 0, .25);
+        margin-bottom: 40px;
+        margin-top: 40px;
+        padding: 40px;
+    }
+    img{
+        border-radius: 10px;
+    }
+
+    .star{
+        color: goldenrod;
+        font-size: 2.0rem;
+        padding: 0 1rem; /* space out the stars */
+    }
+    .star::before{
+        content: '\2606';
+        cursor: pointer;
+    }
+    .star:hover::before{
+        /* the :hover should come first */
+        content: '\2605';
+        color: #bada55;
+    }
+    .star.rated::before{
+        /* the :hover should come first */
+        content: '\2605';
+    }
+
+
+</style>
+
+{% for message in app.flashes('success') %}
+    <div class="alert alert-success mt-5 text-center">
+        {{ message }}
+    </div>
+{% endfor %}
+
+<section class="post text-center">
+    <article>
+        <h3 class="text-uppercase ">{{ post.title }}</h3>
+        <div class="metadata">
+            {{ post.createdAt | date('Y-m-d')}} at {{ post.createdAt | date('H:i') }} by
+            {% if post.author %}
+            {{ post.author.firstName }}
+            {% else %}
+                user
+            {% endif %}
+            {#                <span class="badge bg-success">{{ post.category.title }}</span>#}
+            {{ post.comments | length  }} {{ (post.comments | length <= 1) ? 'comment' : 'comments' }}
+        </div>
+        <div class="content text-center " >
+            {% if post.imageName %}
+                <img  src="{{ vich_uploader_asset(post, 'imageFile') }}"  alt="" class="mt-3 mb-3" width="550">
+                {% endif %}
+                <p>{{ post.content}}</p>
+
+            <div class="Actor">
+               Actors:
+                {% for actor in post.actors %}
+                    <a  class="btn btn-primary btn-sm" href="{{ path('actor_show', {'id': actor.id}) }}">  {{ actor.name}}  </a>
+                {% endfor %}
+            </div>
+            <br>
+            {% for category in post.getCategories() %}
+                <span class="badge bg-success">{{ category.getTitle() }}</span>
+            {% endfor %}
+        <br>
+            <br>
+                {% if app.user == post.author %}
+                    <a class="btn btn-secondary" href="{{ path('post_edit', {'id': post.id}) }}">Edit the post</a>
+                {% endif %}
+            </div>
+    </article></section>
+    <br>
+
+    <div class="stars" data-rating="0">
+        <h1>Rate this Movie</h1>
+        <span class="star" data-value="1">&nbsp;</span>
+        <span class="star" data-value="2">&nbsp;</span>
+        <span class="star" data-value="3">&nbsp;</span>
+        <span class="star" data-value="4">&nbsp;</span>
+        <span class="star" data-value="5">&nbsp;</span>
+    </div>
+
+    <h2 class="mt-5">{{ post.comments | length  }} {{ (post.comments | length <= 1) ? 'comment' : 'comments' }}</h2>
+    <section class="mt-5">
+        {% for comment in post.comments %}
+            <div class="card-header">
+                {{ comment.author}}<br> <small> <br>{{ comment.createdAt | date('Y-m-d')}} at {{ comment.createdAt | date('H:i') }}</small>
+            </div>
+            <div class="card-body">
+                <p>{{ comment.content }}</p>
+                {% for reply in comment.replies %}
+                    <div>
+                        {{ reply.author }}: {{ reply.content }}
+                    </div>
+
+                {% set replyFormOutput = form_start(replyForm, {'attr': {'action': path('post_show',{"id":post.id,'parent_id':comment.id})}}) ~ form_widget(replyForm) %}
+
+                    <button class="btn btn-success mt-3">Add a reply</button>
+                    {{ form_end(replyForm) }}
+                {% endfor %}
+
+            </div>
+        {% endfor %}
+        </section>
+
+        <hr>
+
+        {% if app.user %}
+            <div class="text-center">
+        <h2>Add Comment</h2>
+            <label>
+        {{ form_start(commentForm) }}
+        {{ form_widget(commentForm) }}
+        <button class="btn btn-success mt-5">Add a comment</button>
+        {{ form_end(commentForm) }}
+            </label>
+            </div>
+        {% endif %}
+
+        {% for comment in post.comments %}
+
+                   {% for reply in comment.replies %}
+                <div>
+                    {{ reply.author }}: {{ reply.content }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    <script >
+
+
+
+
+        $(".star").on('click',function () {
+            console.log("starclicked")
+            $.ajax({
+                url: '{{ path('rating_create') }}' ,
+                data: {
+
+                    "rating": $(this).data("value"),
+                    "user":{{ app.user.id }},
+                    "post":{{ post.id }},
+                },
+
+                success: function(result){
+                    $(".stars").html(result.rating);
+                }});
+        })
+    </script>
+{% endblock %}

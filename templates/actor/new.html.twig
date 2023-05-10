@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Actor New{% endblock %}
+
+{% block body %}
+    <h1>Create New Actor</h1>
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <input type="submit" value="Create" class="btn btn-primary">
+    {{ form_end(form) }}
+
+    <a href="{{ path('actor_index') }}">Back to the list</a>
+{% endblock %}
